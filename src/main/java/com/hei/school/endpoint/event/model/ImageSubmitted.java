@@ -1,6 +1,5 @@
 package com.hei.school.endpoint.event.model;
 
-import com.hei.school.enums.ImageStatusEnum;
 import java.time.Duration;
 import lombok.*;
 
@@ -12,10 +11,9 @@ import lombok.*;
 @ToString(callSuper = true)
 public class ImageSubmitted extends PojaEvent {
   private String imageId;
+  private String bucketKey;
   private String imageName;
   private String emailTo;
-  private String format;
-  private ImageStatusEnum status;
 
   @Override
   public Duration maxConsumerDuration() {
