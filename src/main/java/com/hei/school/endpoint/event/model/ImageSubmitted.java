@@ -1,19 +1,25 @@
 package com.hei.school.endpoint.event.model;
 
 import java.time.Duration;
-import lombok.*;
+import java.util.UUID;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
+import lombok.ToString;
 
-@Data
-@AllArgsConstructor
 @NoArgsConstructor
+@AllArgsConstructor
 @Builder(toBuilder = true)
+@Data
 @EqualsAndHashCode(callSuper = false)
-@ToString(callSuper = true)
+@ToString
 public class ImageSubmitted extends PojaEvent {
-  private String imageId;
-  private String bucketKey;
-  private String imageName;
+  private UUID imageId;
+  private String s3Key;
   private String emailTo;
+  private String s3Bucket;
 
   @Override
   public Duration maxConsumerDuration() {
