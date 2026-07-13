@@ -1,60 +1,50 @@
 package com.hei.school.service;
 
-import lombok.AllArgsConstructor;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import lombok.SneakyThrows;
-import org.springframework.beans.factory.annotation.Value;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-import software.amazon.awssdk.core.sync.RequestBody;
-import software.amazon.awssdk.services.s3.S3Client;
-import software.amazon.awssdk.services.s3.model.GetObjectRequest;
-import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 
 @Service
-@AllArgsConstructor
+@Slf4j
 public class S3Service {
-  private final S3Client s3Client;
+  private final Path localStorage = Paths.get("local-storage");
 
-  @Value("${aws.s3.bucket}")
-  private String bucketName;
+  public S3Service() {
+    try {
+      Files.createDirectories(localStorage);
+      log.info("Local storage initialized at: {}", localStorage.toAbsolutePath());
+    } catch (Exception e) {
+      log.warn("Could not create local storage directory", e);
+    }
+  }
 
   @SneakyThrows
   public void upload(String key, MultipartFile file) {
-    PutObjectRequest putObjectRequest =
-        PutObjectRequest.builder()
-            .bucket(bucketName)
-            .key(key)
-            .contentType(file.getContentType())
-            .build();
-
-    s3Client.putObject(
-        putObjectRequest, RequestBody.fromInputStream(file.getInputStream(), file.getSize()));
+    Path filePath = localStorage.resolve(key);
+    Files.createDirectories(filePath.getParent());
+    file.transferTo(filePath.toFile());
+    log.info("File saved locally: {}", filePath);
   }
 
   @SneakyThrows
   public void upload(String bucket, String key, byte[] content, String contentType) {
-    PutObjectRequest putObjectRequest =
-        PutObjectRequest.builder().bucket(bucket).key(key).contentType(contentType).build();
-
-    s3Client.putObject(putObjectRequest, RequestBody.fromBytes(content));
-  }
-
-  @SneakyThrows
-  public byte[] download(String key) {
-    GetObjectRequest getObjectRequest =
-        GetObjectRequest.builder().bucket(bucketName).key(key).build();
-
-    return s3Client.getObjectAsBytes(getObjectRequest).asByteArray();
+    Path filePath = localStorage.resolve(key);
+    Files.createDirectories(filePath.getParent());
+    Files.write(filePath, content);
+    log.info("File saved locally: {}", filePath);
   }
 
   @SneakyThrows
   public byte[] download(String bucket, String key) {
-    GetObjectRequest getObjectRequest = GetObjectRequest.builder().bucket(bucket).key(key).build();
-
-    return s3Client.getObjectAsBytes(getObjectRequest).asByteArray();
+    Path filePath = localStorage.resolve(key);
+    return Files.readAllBytes(filePath);
   }
 
-  public Object getBucketName() {
-    return bucketName;
+  public String getBucketName() {
+    return "local-bucket";
   }
 }
