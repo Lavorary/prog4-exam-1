@@ -1,5 +1,6 @@
 package com.hei.school.repository.model;
 
+import com.hei.school.enums.ImageStatusEnum;
 import jakarta.persistence.*;
 import java.time.Instant;
 import java.util.UUID;
@@ -23,4 +24,10 @@ public class JImage {
 
   @Column(nullable = false)
   private Instant createdAt;
+
+  @Column private String processedUrl;
+
+  @Column(nullable = false)
+  @Enumerated(EnumType.STRING)
+  private ImageStatusEnum status;
 }
