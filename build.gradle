@@ -21,6 +21,7 @@ jacoco {
 
 repositories {
 
+
     mavenCentral()
 }
 
@@ -146,6 +147,11 @@ dependencies {
     testImplementation 'org.testcontainers:testcontainers-junit-jupiter:2.0.2'
     testImplementation 'org.junit-pioneer:junit-pioneer:2.2.0'
 
+implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+runtimeOnly 'org.postgresql:postgresql'
+implementation 'me.paulschwarz:spring-dotenv:4.0.0'
+implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
+implementation "org.jetbrains.kotlin:kotlin-stdlib"
 
 
 }
